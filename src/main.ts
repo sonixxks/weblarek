@@ -45,24 +45,26 @@ shoppingCart.clearCart();
 console.log("Корзина после очистки:", shoppingCart.getProducts());
 console.log('Количество товаров после очистки:', shoppingCart.getProductCount());
 
-const testBuyerData = {
-  payment: "card" as TPayment,
-  phone: "+7 999 999-99-99",
-  address: "г. Екатеринбург, ул. Коминтерна, д. 11, кв. 11",
-  email: 'sonixks@yandex.ru'
-};
+const buyer = new Buyer();
 
-const buyer = new Buyer(testBuyerData);
+buyer.save({email: 'sonixks@yandex.ru'});
 
 console.log('Валидация корректных данных:', buyer.validate());
-console.log('Получение данных покупателя:', buyer.getBuyer());
+console.log('Данные покупателя после частичного заполнения:', buyer.getBuyer());
+
+buyer.save({
+    payment: 'card',
+    phone: '+7 999 999-99-99',
+    address: 'г. Екатеринбург, ул. Коминтерна, 11',
+    email: 'sonixks@yandex.ru'
+});
+
+console.log('Валидация корректных данных:', buyer.validate());
+console.log('Данные покупателя после полного заполнения:', buyer.getBuyer());
 
 console.log('Очистка данных');
 buyer.clearBuyerData();
 console.log('Валидация после очистки:', buyer.validate());
-
-console.log('Сохраняем данные');
-buyer.save();
 
 const baseApi = new Api(API_URL);
 const shopApi = new ShopApi(baseApi);

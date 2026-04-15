@@ -1,30 +1,34 @@
 import { IBuyer } from "../../types";
 import { TPayment } from "../../types";
-
-type ValidationResult = {
-    valid: boolean;
-    errors: {
-        payment?: string;
-        address?: string;
-        phone?: string;
-        email?: string;
-    };
-};
+import { ValidationResult, ValidationErrors } from "../../types";
 
 export class Buyer {
-    private payment: TPayment;
+    private payment: TPayment | '';
     private address: string;
     private phone: string;
     private email: string;
 
-    constructor(data: IBuyer) {
-        this.payment = data.payment;
-        this.address = data.address;
-        this.phone = data.phone;
-        this.email = data.email;
+    constructor() {
+        this.payment = '';
+        this.address = '';
+        this.phone = '';
+        this.email = '';
     }
 
-    save(): void {}
+    save(data: Partial<IBuyer>): void {
+        if (data.payment !== undefined) {
+            this.payment = data.payment;
+        }
+        if (data.address !== undefined) {
+            this.address = data.address;
+        }
+        if (data.email !== undefined) {
+            this.email = data.email;
+        }
+        if (data.phone !== undefined) {
+            this.phone = data.phone;
+        }
+    }
 
     getBuyer(): IBuyer {
         return {
@@ -43,7 +47,7 @@ export class Buyer {
     }
 
     validate(): ValidationResult {
-        const errors: ValidationResult["errors"] = {};
+        const errors: ValidationErrors = {};
 
         if (!this.payment) {
             errors.payment = "Не выбран вид оплаты";

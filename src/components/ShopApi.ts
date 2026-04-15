@@ -1,7 +1,4 @@
-import { IApi } from "../types";
-import { IProductResponse } from "../types";
-import { IOrder } from "../types";
-import { IOrderResponse } from "../types";
+import { IApi, IProductResponse, IOrder, IOrderResponse } from "../types";
 
 export class ShopApi {
     private api: IApi;

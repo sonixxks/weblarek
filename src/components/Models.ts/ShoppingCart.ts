@@ -16,7 +16,7 @@ export class ShoppingCart {
     }
 
     removeProduct(id: string): void {
-        this.products.filter((product) => product.id !== id);
+        this.products = this.products.filter((product) => product.id !== id);
     }
 
     clearCart(): void {
@@ -24,16 +24,7 @@ export class ShoppingCart {
     }
 
     getTotalPrice(): number {
-        let sum = 0;
-
-        for (const product of this.products) {
-            if (product.price !== null && product.price !== undefined) {
-                sum += product.price;
-            } else {
-                sum += 0;
-            }
-        }
-        return sum;
+        return this.products.reduce((sum, product) => sum + (product.price ?? 0), 0);
     }
 
     getProductCount(): number {
