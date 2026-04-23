@@ -5,11 +5,11 @@ export interface IApi {
     post<T extends object>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
 }
 
-export type ValidationErrors = Partial<Record<keyof IBuyer, string>>
-
-export type ValidationResult = {
-    valid: boolean;
-    errors: ValidationErrors;
+export type TValidationErrors = {
+  payment?: string;
+  address?: string;
+  email?: string;
+  phone?: string;
 };
 
 export interface IProduct {
@@ -46,4 +46,8 @@ export interface IOrder extends IBuyer {
 export interface IOrderResponse {
     id: string;
     total: number;
+}
+
+export interface ICardActions {
+    onClick?: (event: MouseEvent) => void;
 }

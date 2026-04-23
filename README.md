@@ -189,3 +189,183 @@ Presenter - презентер содержит основную логику п
 Методы класса:
 `getProducts(): Promise<IProductResponse>` - получение списка товаров из API.
 `createOrder(order: IOrder)` - отправка данных в API для создания заказа.
+
+### Слой Представления (View)
+
+#### Класс Modal
+Компонент модального окна.
+
+Поля класса:
+`closeButton: HTMLButtonElement` - кнопка закрытия окна.
+`contentContainer: HTMLElement` - контейнер для контента.
+
+Конструктор:  
+`constructor(container: HTMLElement, events: IEvents)`
+
+Методы класса:
+`set content(value: HTMLElement)` - заменяет содержимое модального окна.
+`open(): void` - открывает модальное окно.
+`close(): void` - закрывает модальное окно.
+
+#### Класс Header
+Компонент шапки.
+
+Поля класса:
+`basketButton: HTMLButtonElement` - кнопка открытия корзины.
+`counterElement: HTMLElement` - счетчик товаров в корзине.
+
+Конструктор:  
+`constructor(container: HTMLElement, events: IEvents)`
+
+Методы класса:
+`set counter(value: number)` - устанавливает значение счетчика.
+
+#### Класс Gallery
+Компонент каталога товаров.
+
+Поля класса:
+`catalogElement: HTMLElement` - каталог.
+
+Конструктор:  
+`constructor(container: HTMLElement)`
+
+Методы класса:
+`set catalog(items: HTMLElement[])` - отображает массив карточек в каталоге.
+
+#### Класс Success
+Компонент сообщения об успешной отправке заказа.
+
+Поля класса:
+`descriptionElement: HTMLElement` - итоговая сумма.
+`closeButton: HTMLButtonElement` - кнопка закрытия.
+
+Конструктор:  
+`constructor(container: HTMLElement, events: IEvents)`
+
+Методы класса:
+`set total(value: number)` - устанавливает сумму списания.
+
+#### Класс Basket
+Компонент корзины.
+
+Поля класса:
+`listContainer: HTMLElement` - список товаров.
+`button: HTMLButtonElement` - кнопка оформления заказа.
+`totalElement: HTMLElement` - общая стоимость.
+
+Конструктор:  
+`constructor(container: HTMLElement, events: IEvents)`
+
+Методы класса:
+`set items(items: HTMLElement[])` - отображает список товаров корзины.
+`set total(value: number)` - отображает сумму товаров корзины.
+
+#### Класс Form (общий)
+Общий класс для всех форм.
+
+Поля класса:
+`submitButton: HTMLButtonElement` - кнопка отправки формы.
+`errorsContainer: HTMLElement` - для сообщения об ошибках.
+
+Конструктор:  
+`constructor(container: HTMLFormElement)`
+
+Методы класса:
+`set error(value: string)` - устанавливает значение валидности.
+`set valid(value: boolean)` - устанавливает значение сообщения ошибки.
+
+#### Класс ContactsForm
+Форма контактов.
+
+Поля класса:
+`emailInput: HTMLInputElement` - поле для email.
+`phoneInput: HTMLInputElement` - поле для телефона.
+
+Конструктор:  
+`constructor(container: HTMLElement, events: IEvents)`
+
+Методы класса:
+`set email(value: string)` - устанавливает значение email.
+`set phone(value: string)` - устанавливает значение телефона.
+
+#### Класс OrderForm
+Форма оформления заказа.
+
+Поля класса:
+`paymentButtons: HTMLButtonElement[]` - кнопка выбора вида оплаты.
+`addressInput: HTMLInputElement` - кнопка для адреса.
+
+Конструктор:  
+`constructor(container: HTMLElement, events: IEvents)`
+
+Методы класса:
+`set address(value: string)` - устанавливает значение адреса.
+`set selectedPayment(value: "card" | "cash" | null)` - устанавливает выбор вида оплаты.
+
+#### Класс Card
+Общий класс для всех типов карточек.
+
+Поля класса:
+`title: HTMLElement` - название товара.
+`price: HTMLElement` - цена товара.
+
+Конструктор:  
+`constructor(container: HTMLElement)`
+
+Методы класса:
+`set title(value: string)` - устанавливает название.
+`set price(value: number | null)` - устанавливает цену.
+
+#### Класс CardCatalog
+Карточка товара для отображения в каталоге.
+
+Поля класса:
+`categoryElement: HTMLElement` - категория.
+`imageElement: HTMLImageElement` - изображение.
+
+Конструктор:  
+`constructor(container: HTMLElement, actions?: ICardActions)`
+
+Методы класса:
+`set category(value: string)` - устанавливает категорию.
+`set image(value: string)` - устанавливает изображение.
+
+#### Класс CardPreview
+Карточка товара для отображения в модальном окне.
+
+Поля класса:
+`categoryElement: HTMLElement` - категория.
+`imageElement: HTMLImageElement` - изображение.
+`descriptionElement?: HTMLElement` - описание.
+`buttonElement: HTMLButtonElement` - кнопка купит или удалить.
+
+Конструктор:  
+`constructor(container: HTMLElement, actions?: ICardActions)`
+
+Методы класса:
+`set category(value: string)` - устанавливает категорию.
+`set image(value: string)` - устанавливает изображение.
+`set description(value: string)` - устанавливает описание.
+`set buttonState(inCart: boolean)` - устанавливает текст кнопки.
+`set price(value: number | null)` - устанавливает цену.
+`set disableButton()` - устанавливает текст недоступно и блокировка кнопки.
+
+#### Класс CardBasket
+Карточка товара для отображения в корзине.
+
+Поля класса:
+`indexElement: HTMLElement` - номер товара.
+`deleteButton: HTMLButtonElement` - кнопка удаления из корзины.
+
+Конструктор:  
+`constructor(container: HTMLElement, actions?: ICardActions)`
+
+Методы класса:
+`set index(value: number)` - устанавливает значение индекса товара.
+
+### Слой Презентера
+
+
+Поля:
+
+Методы:
