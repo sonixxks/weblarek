@@ -40,10 +40,6 @@ export class ContactsForm extends Form<IContactsFormData> {
         this.phoneInput.value = value;
     }
     
-    set isValid(value: boolean) {
-        this.valid = value;
-    }
-    
     setErrors(errors: { email?: string; phone?: string }): void {
         const errorMessages = [];
         if (errors.email) errorMessages.push(errors.email);

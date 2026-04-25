@@ -61,10 +61,6 @@ export class OrderForm extends Form<IOrderFormData> {
     this.addressInput.value = value;
   }
 
-  set isValid(value: boolean) {
-    this.valid = value;
-  }
-
   setErrors(errors: { payment?: string; address?: string }): void {
     const errorMessages = [];
     if (errors.payment) errorMessages.push(errors.payment);

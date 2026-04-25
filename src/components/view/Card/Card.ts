@@ -10,31 +10,31 @@ export interface ICardData {
 }
 
 export abstract class Card extends Component<ICardData> {
-    protected titleElement: HTMLElement;
-    protected priceElement: HTMLElement;
+  protected titleElement: HTMLElement;
+  protected priceElement: HTMLElement;
 
-    constructor(container: HTMLElement) {
-        super(container);
+  constructor(container: HTMLElement) {
+    super(container);
 
-        this.titleElement = ensureElement<HTMLElement>(
-            ".card__title",
-            this.container,
-        );
-        this.priceElement = ensureElement<HTMLElement>(
-            ".card__price",
-            this.container,
-        );
+    this.titleElement = ensureElement<HTMLElement>(
+      ".card__title",
+      this.container,
+    );
+    this.priceElement = ensureElement<HTMLElement>(
+      ".card__price",
+      this.container,
+    );
+  }
+
+  set title(value: string) {
+    this.titleElement.textContent = value;
+  }
+
+  set price(value: number | null) {
+    if (value === null) {
+      this.priceElement.textContent = "Бесценно";
+    } else {
+      this.priceElement.textContent = `${value} синапсов`;
     }
-
-    set title(value: string) {
-        this.titleElement.textContent = value;
-    }
-
-    set price(value: number | null) {
-        if (value === null) {
-            this.priceElement.textContent = "Бесценно";
-        } else {
-            this.priceElement.textContent = `${value} синапсов`;
-        }
-    }
+  }
 }

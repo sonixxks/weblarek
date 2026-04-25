@@ -1,9 +1,6 @@
-export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
+export type ApiPostMethods = "POST" | "PUT" | "DELETE";
 
-export interface IApi {
-    get<T extends object>(uri: string): Promise<T>;
-    post<T extends object>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
-}
+export type TPayment = "card" | "cash" | "";
 
 export type TValidationErrors = {
   payment?: string;
@@ -12,42 +9,52 @@ export type TValidationErrors = {
   phone?: string;
 };
 
-export interface IProduct {
-    id: string;
-    description: string;
-    image: string;
-    title: string;
-    category: string;
-    price: number | null;
+export interface IApi {
+  get<T extends object>(uri: string): Promise<T>;
+  post<T extends object>(
+    uri: string,
+    data: object,
+    method?: ApiPostMethods,
+  ): Promise<T>;
 }
 
-export type TPayment = 'card' | 'cash';
+export interface IProduct {
+  id: string;
+  description: string;
+  image: string;
+  title: string;
+  category: string;
+  price: number | null;
+}
 
 export interface IBuyer {
-    payment: TPayment | '';
-    email: string;
-    phone: string;
-    address: string;
+  payment: TPayment;
+  email: string;
+  phone: string;
+  address: string;
 }
 
-// GET
-export interface IProductResponse {
-    total: number;
-    items: IProduct[];
+export interface GetResponseIProduct {
+  total: number;
+  items: IProduct[];
 }
 
-// Данные для POST
-export interface IOrder extends IBuyer {
-    total: number;
-    items: string[];
+export interface PostRequestIOrder extends IBuyer {
+  id?: string;
+  items: string[];
 }
 
-// Ответ на POST
 export interface IOrderResponse {
-    id: string;
-    total: number;
+  id: string;
+  total: number;
 }
 
-export interface ICardActions {
-    onClick?: (event: MouseEvent) => void;
+export interface IApi {
+  baseUrl: string;
+  get<T>(uri: string): Promise<T>;
+  post<T>(
+    uri: string,
+    data: object,
+    method?: "POST" | "PUT" | "DELETE",
+  ): Promise<T>;
 }

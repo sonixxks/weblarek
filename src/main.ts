@@ -1,12 +1,15 @@
 import './scss/styles.scss';
+
 import { EventEmitter } from "./components/base/Events";
 import { Api } from "./components/base/Api";
-import { ShopApi } from "./components/ShopApi";
+import { AppApi } from "./components/Models/AppApi";
 import { API_URL, CDN_URL } from "./utils/constants";
 import { cloneTemplate } from "./utils/utils";
+
 import { ProductCatalog } from "./components/Models/ProductCatalog";
 import { ShoppingCart } from "./components/Models/ShoppingCart";
 import { Buyer } from "./components/Models/Buyer";
+
 import { Header } from "./components/view/Header";
 import { Gallery } from "./components/view/Gallery";
 import { Modal } from "./components/view/Modal";
@@ -14,10 +17,10 @@ import { Basket } from "./components/view/Basket";
 import { Success } from "./components/view/Success";
 import { OrderForm } from "./components/view/Form/OrderForm";
 import { ContactsForm } from "./components/view/Form/ContactsForm";
+
 import { CardCatalog } from "./components/view/Card/CardCatalog";
 import { CardPreview } from "./components/view/Card/CardPreview";
 import { CardBasket } from "./components/view/Card/CardBasket";
-import { IProduct } from './types';
 
 const cardCatalogTemplate = document.querySelector<HTMLTemplateElement>('#card-catalog')!;
 const cardPreviewTemplate = document.querySelector<HTMLTemplateElement>('#card-preview')!;
@@ -28,11 +31,13 @@ const contactsTemplate = document.querySelector<HTMLTemplateElement>('#contacts'
 const successTemplate = document.querySelector<HTMLTemplateElement>('#success')!;
 
 const events = new EventEmitter();
+
 const catalog = new ProductCatalog(events);
 const cart = new ShoppingCart(events);
 const buyer = new Buyer(events);
+
 const apiBase = new Api(API_URL);
-const api = new ShopApi(apiBase);
+const api = new AppApi(apiBase);
 
 const galleryContainer = document.querySelector('.gallery') as HTMLElement;
 const modalContainer = document.querySelector('.modal') as HTMLElement;
@@ -41,6 +46,7 @@ const headerContainer = document.querySelector('.page__wrapper') as HTMLElement;
 const gallery = new Gallery(galleryContainer);
 const modal = new Modal(modalContainer, events);
 const header = new Header(events, headerContainer);
+
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 const orderForm = new OrderForm(cloneTemplate(orderTemplate), events);
 const contactsForm = new ContactsForm(cloneTemplate(contactsTemplate), events);
@@ -53,15 +59,15 @@ const cardPreview = new CardPreview(previewContainer, {
 
 async function loadProducts() {
     try {
-        const response = await api.getProducts();
-        catalog.setProducts(response.items);
+        const products = await api.getProducts();
+        catalog.setItems(products);
     } catch (error) {
         console.error('Ошибка загрузки товаров:', error);
     }
 }
 
 function updateCatalog() {
-    const products = catalog.getProducts();
+    const products = catalog.getItems();
 
     const cards = products.map(product => {
         const container = cloneTemplate(cardCatalogTemplate) as HTMLElement;
@@ -81,7 +87,7 @@ function updateCatalog() {
 }
 
 function updateBasket() {
-    const cartItems = cart.getProducts();
+    const cartItems = cart.getItems();
 
     const items = cartItems.map((item, index) => {
         const container = cloneTemplate(cardBasketTemplate) as HTMLLIElement;
@@ -101,7 +107,7 @@ function updateBasket() {
 }
 
 function updatePreview() {
-    const product = catalog.getProductCard();
+    const product = catalog.getPreview();
     if (!product) return;
 
     cardPreview.title = product.title;
@@ -109,13 +115,13 @@ function updatePreview() {
     cardPreview.category = product.category;
     cardPreview.image = CDN_URL + product.image;
     cardPreview.description = product.description || '';
-    cardPreview.buttonState = cart.hasProduct(product.id);
+    cardPreview.buttonState = cart.isInCart(product.id);
 
     modal.open(cardPreview.render());
 }
 
 function updateOrderForm() {
-    const data = buyer.getBuyer();
+    const data = buyer.getData();
 
     let payment: 'card' | 'cash' | null = null;
     if (data.payment === 'card') {
@@ -132,11 +138,11 @@ function updateOrderForm() {
         payment: errors.payment,
         address: errors.address
     });
-    orderForm.isValid = !errors.payment && !errors.address;
+    orderForm.valid = !errors.payment && !errors.address;
 }
 
 function updateContactsForm() {
-    const data = buyer.getBuyer();
+    const data = buyer.getData();
     contactsForm.email = data.email;
     contactsForm.phone = data.phone;
 
@@ -145,7 +151,7 @@ function updateContactsForm() {
         email: errors.email,
         phone: errors.phone
     });
-    contactsForm.isValid = !errors.email && !errors.phone;
+    contactsForm.valid = !errors.email && !errors.phone;
 }
 
 events.on('catalog:changed', () => {
@@ -154,7 +160,7 @@ events.on('catalog:changed', () => {
 
 events.on('basket:changed', () => {
     updateBasket();
-    header.counter = String(cart.getProductCount());
+    header.counter = String(cart.getCount());
 });
 
 events.on('basket:open', () => {
@@ -165,28 +171,28 @@ events.on('preview:changed', () => {
     updatePreview();
 });
 
-events.on('card:select', (product: IProduct) => {
-    catalog.setProductCard(product);
+events.on('card:select', (data: { id: string }) => {
+    catalog.setPreview(data.id);
 });
 
 events.on('card:buy', () => {
-    const product = catalog.getProductCard();
+    const product = catalog.getPreview();
     if (!product) return;
 
-    if (cart.hasProduct(product.id)) {
-        cart.removeProduct(product.id);
+    if (cart.isInCart(product.id)) {
+        cart.removeItem(product.id);
     } else {
         if (product.price === null) return;
-        cart.addProduct(product);
+        cart.addItem(product);
     }
 
     modal.close();
 
-    cardPreview.buttonState = cart.hasProduct(product.id);
+    cardPreview.buttonState = cart.isInCart(product.id);
 });
 
 events.on('basket:remove', (data: { id: string }) => {
-    cart.removeProduct(data.id);
+    cart.removeItem(data.id);
 });
 
 events.on('order:changed', () => {
@@ -200,11 +206,11 @@ events.on('order:start', () => {
 });
 
 events.on('order:paymentSelected', (data: { payment: 'card' | 'cash' }) => {
-    buyer.save({payment: data.payment});
+    buyer.setField('payment', data.payment);
 });
 
 events.on('order:inputChanged', (data: { address: string }) => {
-    buyer.save({address: data.address});
+    buyer.setField('address', data.address);
 });
 
 events.on('order:submit', () => {
@@ -212,28 +218,28 @@ events.on('order:submit', () => {
     modal.open(contactsForm.render());
 });
 
-events.on('contacts:submit', (data: { email: string; phone: string }) => {
-    buyer.save({email: data.email});
-    buyer.save({phone: data.phone});
+events.on('contacts:inputChanged', (data: { email: string; phone: string }) => {
+    buyer.setField('email', data.email);
+    buyer.setField('phone', data.phone);
 });
 
 events.on('order:pay', async () => {
     try {
         const orderData = {
-            payment: buyer.getBuyer().payment,
-            address: buyer.getBuyer().address,
-            email: buyer.getBuyer().email,
-            phone: buyer.getBuyer().phone,
-            items: cart.getProducts().map(p => p.id),
+            payment: buyer.getData().payment,
+            address: buyer.getData().address,
+            email: buyer.getData().email,
+            phone: buyer.getData().phone,
+            items: cart.getItems().map(item => item.id),
             total: cart.getTotalPrice(),
         };
 
-        const response = await api.createOrder(orderData);
+        const response = await api.postOrder(orderData);
 
         success.total = response.total;
         modal.open(success.render());
 
-        cart.clearCart();
+        cart.clear();
         buyer.clear();
 
     } catch (error) {

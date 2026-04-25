@@ -1,47 +1,43 @@
-import { IProduct } from "../../types";
+import { IProduct } from '../../types';
 import { IEvents } from '../base/Events';
 
 export class ShoppingCart {
-    private products: IProduct[] = [];
+    private _items: IProduct[] = [];
 
     constructor(private events: IEvents) {}
 
-    getProducts(): IProduct[] {
-        return this.products;
+    getItems(): IProduct[] {
+        return this._items;
     }
 
-    addProduct(product: IProduct): void {
-        if (!this.hasProduct(product.id)) {
-            this.products.push(product);
-            this.events.emit('cart:changed');
+    addItem(item: IProduct): void {
+        if (!this.isInCart(item.id)) {
+            this._items.push(item);
+            this.events.emit('basket:changed');
         }
     }
 
-    removeProduct(id: string): void {
-        const initialLength = this.products.length;
-        this.products = this.products.filter((product) => product.id !== id);
-        
-        if (this.products.length !== initialLength) {
-            this.events.emit('cart:changed');
-        }
+    removeItem(itemId: string): void {
+        this._items = this._items.filter(item => item.id !== itemId);
+        this.events.emit('basket:changed');
     }
 
-    clearCart(): void {
-        if (this.products.length > 0) { // ← Не эмитим, если корзина уже пуста
-            this.products = [];
-            this.events.emit('cart:changed');
-        }
+    clear(): void {
+        this._items = [];
+        this.events.emit('basket:changed');
     }
 
     getTotalPrice(): number {
-        return this.products.reduce((sum, product) => sum + (product.price ?? 0), 0);
+        return this._items.reduce((total, item) => {
+            return total + (item.price || 0);
+        }, 0);
     }
 
-    getProductCount(): number {
-        return this.products.length;
+    getCount(): number {
+        return this._items.length;
     }
 
-    hasProduct(id: string): boolean {
-        return this.products.some((product) => product.id === id)
+    isInCart(itemId: string): boolean {
+        return this._items.some(item => item.id === itemId);
     }
 }
