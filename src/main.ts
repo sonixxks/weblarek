@@ -201,7 +201,6 @@ events.on('order:changed', () => {
 });
 
 events.on('order:start', () => {
-    updateOrderForm();
     modal.open(orderForm.render());
 });
 
@@ -214,7 +213,6 @@ events.on('order:inputChanged', (data: { address: string }) => {
 });
 
 events.on('order:submit', () => {
-    updateContactsForm();
     modal.open(contactsForm.render());
 });
 

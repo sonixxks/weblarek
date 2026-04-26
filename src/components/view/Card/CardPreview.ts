@@ -39,9 +39,7 @@ export class CardPreview extends Card {
   set category(value: string) {
     this.categoryElement.textContent = value;
     const modifier = categoryMap[value as keyof typeof categoryMap];
-    if (modifier) {
-      this.categoryElement.classList.add(modifier);
-    }
+    this.categoryElement.className = `card__category ${modifier}`;
   }
 
   set image(value: string) {
@@ -70,7 +68,7 @@ export class CardPreview extends Card {
 
   set price(value: number | null) {
     super.price = value;
-    if (value === null) {
+    if (this.disabled = value === null) {
       this.disabled = true;
     }
   }
